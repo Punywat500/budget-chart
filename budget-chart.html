@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>6 ยุทธศาสตร์ - งบประมาณ</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Prompt', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #fce4ec);
+      min-height: 100vh;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      color: #263238;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .chart-container {
+      width: 100%;
+      max-width: 500px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    #infoBox {
+      flex: 1;
+      min-width: 280px;
+      max-width: 400px;
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      padding: 20px;
+      display: none;
+    }
+
+    #infoBox h2 {
+      color: #00796b;
+      margin-top: 0;
+    }
+
+    #infoBox p {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+<h1>เปิดงบฯ “3.78 ล้านล้าน” ฝ่าวิกฤตเศรษฐกิจประเทศ</h1>
+  <h2><center>6 ยุทธศาสตร์ - จัดสรรงบประมาณ</center></h2>
+
+  <div class="main-container">
+    <div class="chart-container">
+      <canvas id="budgetPie"></canvas>
+    </div>
+    <div id="infoBox"></div>
+  </div>
+
+  <script>
+    const labels = [
+      '1. ความมั่นคง',
+      '2. ความสามารถในการแข่งขัน',
+      '3. ทรัพยากรมนุษย์',
+      '4. ความเสมอภาคทางสังคม',
+      '5. สิ่งแวดล้อม',
+      '6. การบริหารภาครัฐ'
+    ];
+
+    const budgets = [415327.9, 394611.6, 605927.3, 942709.2, 147216.9, 605441.6];
+    const total = budgets.reduce((a, b) => a + b, 0);
+
+    const details = [
+      "ขับเคลื่อนการแก้ไขปัญหาภาคใต้, สถาบันหลัก, ภัยพิบัติ ฯลฯ",
+      "เศรษฐกิจดิจิทัล, โลจิสติกส์, พลังงาน, SME, Soft Power ฯลฯ",
+      "พัฒนาการศึกษา, สุขภาพ, กีฬา, ค่านิยม ฯลฯ",
+      "กระจายอำนาจ, สังคมสูงวัย, เสมอภาคการศึกษา, กลุ่มเปราะบาง ฯลฯ",
+      "สิ่งแวดล้อม, มลพิษ, น้ำ, ภูมิอากาศ, ป่าไม้ ฯลฯ",
+      "ต้านทุจริต, ดิจิทัลภาครัฐ, ยุติธรรม, การบริหารจัดการใหม่ ฯลฯ"
+    ];
+
+    const colors = [
+      '#2a9d8f', '#f4a261', '#e76f51',
+      '#264653', '#a8dadc', '#457b9d'
+    ];
+
+    const ctx = document.getElementById('budgetPie').getContext('2d');
+    const pieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: budgets,
+          backgroundColor: colors
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          datalabels: {
+            color: '#fff',
+            formatter: (value) => {
+              let percentage = (value / total * 100).toFixed(1);
+              return percentage + '%';
+            },
+            font: {
+              weight: 'bold',
+              size: 14
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const value = ctx.raw.toLocaleString();
+                const percent = ((ctx.raw / total) * 100).toFixed(1);
+                return `${ctx.label}: ${value} ล้านบาท (${percent}%)`;
+              }
+            }
+          }
+        },
+        onClick: (e, elements) => {
+          if (elements.length > 0) {
+            const idx = elements[0].index;
+            const infoBox = document.getElementById('infoBox');
+            infoBox.style.display = 'block';
+            infoBox.innerHTML = `
+              <h2>${labels[idx]}</h2>
+              <p><strong>งบประมาณ:</strong> ${budgets[idx].toLocaleString()} ล้านบาท</p>
+              <p><strong>สัดส่วน:</strong> ${(budgets[idx] / total * 100).toFixed(1)}%</p>
+              <p><strong>รายละเอียด:</strong> ${details[idx]}</p>
+            `;
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+  </script>
+</body>
+</html>
